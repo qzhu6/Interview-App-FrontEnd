@@ -1,0 +1,41 @@
+<h3>>My interviews</h3>
+<br>
+<h3>My Candidate</h3>
+<table class="table">
+<thead>
+  <tr>
+    <th scope="col">Select</th>
+    <th scope="col">Email Sent Date</th>
+    <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Email Template</th>
+      <th scope="col">Status</th>
+  </tr>
+  </thead>
+  <tbody>
+<tr *ngFor="let myCandidate of temp()">
+  <td><div class="checkbox checkbox-primary">
+    <input type="checkbox" (change)="checkMyCandiate(myCandidate)">
+  </div></td>
+  <td>{{ string2Date(myCandidate.sentDate)| date:'MM-dd-yyyy'}}</td>
+  <td>{{ myCandidate.firstName }} </td>
+  <td>{{ myCandidate.lastName }} </td>
+  <td>{{ myCandidate.email }} </td>
+  <td>{{ myCandidate.emailTemplateName }} </td>
+  <td>{{ myCandidate.sentStatus }} </td>
+</tr>
+  </tbody>
+</table>
+<div [hidden]="myCandidates.length>0" class="alert alert-danger">
+NO RESULT</div>
+<div>
+  <button (click)="sendEmail()" class="btn btn-primary">Send Email</button>
+</div>
+<button (click)="next()" [hidden]="page+20>=myCandidates.length" class="btn btn-primary">next</button>
+<button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
+<button *ngFor="let i of getPages()" (click)="jump(i)" class="btn btn-link">
+{{i}}
+</button>
+
+

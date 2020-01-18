@@ -1,0 +1,64 @@
+  <h3>>My interviews</h3>
+  <br>
+  <h3>Candidate</h3>
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Action
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <button class="dropdown-item" (click)="addAllCandidate()">Add to My Candidate</button>
+      <button class="dropdown-item" (click)="createNewCandidate()">Create new Candidate</button>
+    </div>
+  </div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Check</th>
+      <th scope="col"><button type="button" class="btn btn-light" (click)="orderByDate()">Create Date</button></th>
+      <th scope="col"><button type="button" class="btn btn-light" (click)="orderByFirstName()">First Name</button></th>
+      <th scope="col"><button type="button" class="btn btn-light" (click)="orderByLastName()">Last Name</button></th>
+      <th scope="col">Email</th>
+        <th scope="col">CellPhone</th>
+        <th scope="col"><button type="button" class="btn btn-light" (click)="orderByPosition()">Position</button></th>
+        <th scope="col">Email Template</th>
+        <th scope="col"><button type="button" class="btn btn-light" (click)="orderByPosition()">Employee Name</button></th>
+        <th scope="col">Resource</th>
+        <th scope="col">Comment</th>
+        <th scope="col">Resume</th>
+        <th scope="col">Action</th>
+
+    </tr>
+    </thead>
+    <tbody>
+  <tr *ngFor="let candidate of temp()">
+    <td><div class="checkbox checkbox-primary">
+      <input type="checkbox" [disabled]="!candidate.isBelongtoMe" (change)="checkCandiate(candidate.candidateID)">
+    </div></td>
+    <td>{{ string2Date(candidate.createDate)| date:'MM-dd-yyyy'}}</td>
+    <td>{{ candidate.firstName }} </td>
+    <td>{{ candidate.lastName }} </td>
+    <td>{{ candidate.email }} </td>
+    <td>{{ candidate.cellPhone }} </td>
+    <td>{{ candidate.positionName }} </td>
+    <td>{{ candidate.emailTemplateName }} </td>
+    <td>{{ candidate.employeeFirstName+' '+candidate.employeeLastName}} </td>
+    <td>{{ candidate.resource }} </td>
+    <td>{{ candidate.comment }} </td>
+    <td><i class="fas fa-download"></i></td>
+    <td><select (change)="addCandiate(candidate.candidateID)" [disabled]="!candidate.isBelongtoMe">
+      <option selected disabled hidden>Choose here</option>
+      <option>Add to my candidate</option>
+   </select></td>
+  </tr>
+    </tbody>
+</table>
+<div [hidden]="candidates.length>0" class="alert alert-danger">
+  NO RESULT</div>
+<button (click)="next()" [hidden]="page+20>=candidates.length" class="btn btn-primary">next</button>
+<button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
+
+<button *ngFor="let i of getPages()" (click)="jump(i)" class="btn btn-link">
+{{i}}
+</button>
+
+
