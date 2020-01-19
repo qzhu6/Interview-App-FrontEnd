@@ -1,0 +1,52 @@
+<form [formGroup]="profileForm" >
+  <h3>>My interviews</h3>
+  <br>
+  <h3>My interviews</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Interview Date</th>
+      <th scope="col">Interview Time</th>
+        <th scope="col">Interview Duration</th>
+        <th scope="col">FirstName</th>
+        <th scope="col">LastName</th>
+        <th scope="col">Interviewer</th>
+        <th scope="col">CellPhone</th>
+        <th scope="col">PositionName</th>
+        <th scope="col">Resume</th>
+    </tr>
+    </thead>
+    <tbody>
+  <tr *ngFor="let candidate of temp()"
+  [ngClass]="{
+    'table-dark':outOfDate(candidate.interviewStartDateTime)}">
+
+    <td>{{ string2Date(candidate.interviewStartDateTime)| date:'MM-dd-yyyy'}}</td>
+    <td>{{ string2Date(candidate.interviewStartDateTime)| date:'HH:mm:ss'}}</td>
+    <td>{{ candidate.interviewDuration }} </td>
+    <td>{{ candidate.firstName }} </td>
+    <td>{{ candidate.lastName }} </td>
+    <td>{{ candidate.interviewerFirstName+' '+candidate.interviewerLastName}} </td>
+    <td>{{ candidate.cellPhone }} </td>
+    <td>{{ candidate.positionName }} </td>
+    <td><i class="fas fa-download"></i></td>
+  </tr>
+    </tbody>
+</table>
+</form>
+<div [hidden]="candidates.length>0" class="alert alert-danger">
+  NO RESULT</div>
+<button (click)="next()" [hidden]="page+20>=candidates.length" class="btn btn-primary">next</button>
+<button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
+
+<button *ngFor="let i of getPages()" (click)="jump(i)" class="btn btn-link">
+{{i}}
+</button>
+
+
+
+
+
+
+

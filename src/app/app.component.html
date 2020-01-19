@@ -1,0 +1,54 @@
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-4 col-md-2 mr-0">Interview System
+      <ng-container *ngIf="!IsLogged()">
+        <button (click)="Login()" class="btn btn-secondary" type="button">Log In</button>
+      </ng-container>
+      <ng-container *ngIf="IsLogged()">
+        <button (click)="Logout()" class="btn btn-secondary" type="button">Log out</button>
+      </ng-container>
+
+  </a>
+    <ul class="navbar-nav px-5">
+          <div class="input-group">
+            <input ngbDatepicker #d="ngbDatepicker">
+            <div class="input-group-append">
+              <button (click)="d.toggle()" type="button"><i class="far fa-calendar-alt"></i></button>
+            </div>
+          </div>
+    </ul>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-1.5 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <div class="nav flex-column">
+            <li class="nav-item">
+               <h3> Dash</h3>
+            </li>
+            <div class="btn-group-vertical">
+            <button class="btn btn-secondary" type="button" (click)="goHome()">
+                Home
+            </button>
+              <button class="btn btn-secondary" type="button" (click)="goCandidate()">
+                Candidate
+              </button>
+            <button class="btn btn-secondary" type="button" (click)="goMyCandidate()">
+                My candidate
+              </button>
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"  >
+                Interviews
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" *ngFor="let position of positions">
+                <ng-container *ngFor="let position of positions">
+                <a class="dropdown-item" [routerLink]="['interview/']" [queryParams]="{positionName: position}">{{position}}</a>
+                </ng-container>
+              </div>
+        </div>
+      </div>
+    </div>
+      </nav>
+      <main role="main" class="col-md-9 ml-1.5 col-lg-10">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+    </div>
