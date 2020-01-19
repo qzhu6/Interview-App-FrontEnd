@@ -2,6 +2,11 @@ import { AuthenticationService } from './../authentication.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder} from '@angular/forms';
 import { Router } from '@angular/router';
+import { WebService } from './../web.service';
+
+
+
+
 
 
 
@@ -11,29 +16,43 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  Status:string;
+  UserName:string;
   loginForm = this.fb.group({
     userName: [''],
     passWord: ['']
   });
   invalidLogin = false;
 
-  constructor(private fb: FormBuilder, private router: Router,private loginservice: AuthenticationService) { }
+  constructor(private fb: FormBuilder, private router: Router,private ws: WebService, private loginservice: AuthenticationService) { }
 
   ngOnInit() {
   }
   SignIn(){
-    this.loginservice.authenticate(this.loginForm.get('userName').value, this.loginForm.get('passWord').value)
-    // ).
-    // subscribe(
-    //   data => {
-    this.router.navigate(['']);
-    this.invalidLogin = false;
-    //   },
-    //   error => {
-    //     this.invalidLogin = true;
-    //   }
-    // )
-    // );
+    this.ws.authenticate(this.loginForm.get('userName').value, this.loginForm.get('passWord').value)
+    .subscribe(responseData => {
+      this.Status=responseData['loginStatus'],
+      this.UserName=responseData['userName']
+    });
+
   }
+  isWrong(){
+    if(this.Status==null){
+      return false;
+   }
+   else{
+     return true;
+   }
+  }
+  isLoggedIn(){
+    if(this.Status==='Success'){
+       sessionStorage.setItem('username', this.UserName);
+       return true;
+    }
+    else{
+      return this.loginservice.isUserLoggedIn();
+    }
+  }
+
 
 }

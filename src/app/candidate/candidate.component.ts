@@ -1,12 +1,14 @@
 import { AllCandidate } from './allcandidate';
 import { EmailTemplate } from './emailTemplate';
-
-import { Component, OnInit,Input } from '@angular/core';
+import {FileUploader} from 'ng2-file-upload';
+import { Component, OnInit,Input,ElementRef, ViewChild } from '@angular/core';
 import {Observable} from 'rxjs';
 import { WebService } from './../web.service';
 import { FormBuilder} from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import * as fileSaver from 'file-saver';
+import {DownloadService} from './../download.service';
 
 @Component({
   selector: 'app-modal-newroundornot',
@@ -48,7 +50,10 @@ templates$: Observable<string[]>;
   selector: 'app-modal-newroundornot',
   templateUrl: './candidateModal.html',
 })
+
 export class newCandidate{
+  @ViewChild('fileInput', {static: false}) fileInput: ElementRef;
+
   templates$: Observable<string[]>;
   templates: string[];
   positions$: Observable<string[]>;
@@ -64,6 +69,10 @@ export class newCandidate{
     resource: [''],
     resumeFileLocation: [''],
   });
+
+  uploader: FileUploader;
+  isDropOver: boolean;
+
   constructor(private fb: FormBuilder, public newCandidateModal: NgbActiveModal, private ws: WebService,
     private modalService: NgbModal) {}
 
@@ -74,6 +83,17 @@ export class newCandidate{
     this.positions$ = this.ws.getPosition()
     .pipe(map(data => data));
     this.positions$.subscribe(data => this.positions = data);
+    const headers = [{name: 'Accept', value: 'application/json'}];
+    this.uploader = new FileUploader({url: 'api/files', autoUpload: true, headers: headers});
+    this.uploader.onCompleteAll = () => alert('File uploaded');
+
+  }
+  fileOverAnother(e: any): void {
+    this.isDropOver = e;
+  }
+
+  fileClicked() {
+    this.fileInput.nativeElement.click();
   }
 
   close(){
@@ -116,10 +136,23 @@ export class CandidateComponent implements OnInit {
   page: number;
   pages: number[];
   candidateSet: Set<number>;
-  constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal) {
+  constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal,
+    private downloadService: DownloadService) {
     this.candidateSet = new Set();
     this.candidates = [];
     this.page = 0 ;
+  }
+  downloadFileSystem(file) {
+    this.downloadService.downloadFileSystem(file)
+      .subscribe(response => {
+        const filename = response.headers.get('filename');
+
+        this.saveFile(response.body, filename);
+      });
+  }
+  saveFile(data: any, filename?: string) {
+    const blob = new Blob([data], {type: 'text/pdf; charset=utf-8'});
+    fileSaver.saveAs(blob, filename);
   }
   ngOnInit() {
     this.page=0;

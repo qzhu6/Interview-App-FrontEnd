@@ -1,4 +1,5 @@
  <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+<ng-container *ngIf="!isLoggedIn()">
 <form [formGroup]="loginForm">
   <h3>LogIn</h3>
   <h1 >Please sign in</h1>
@@ -8,4 +9,12 @@
   <input type="password" id="inputPassword" class="form-control" placeholder="Password" formControlName="passWord">
   <button class="btn btn-lg btn-primary btn-block" (click)="SignIn()">Sign in</button>
 </form>
+<div *ngIf="isWrong()" class="alert alert-danger" role="alert">
+{{Status}}
+</div>
+</ng-container>
+<ng-container *ngIf="isLoggedIn()">
+<h3>a</h3>
+<h1>Welcome,{{UserName}}</h1>
+</ng-container>
 </div>

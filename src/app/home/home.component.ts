@@ -5,6 +5,8 @@ import { HomeService } from './home.service';
 import { FormBuilder} from '@angular/forms';
 import {Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
+import * as fileSaver from 'file-saver';
+import {DownloadService} from './../download.service';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +22,9 @@ export class HomeComponent implements OnInit {
   });
 
 
-  constructor(private hs: HomeService,private fb: FormBuilder, private ws: WebService) {
+  constructor(private hs: HomeService,private fb: FormBuilder, private ws: WebService,
+    private downloadService: DownloadService
+    ) {
     this.candidates=[];
     this.page=0;
   }
@@ -29,6 +33,18 @@ export class HomeComponent implements OnInit {
     .pipe(map(data => data));
     this.candidate$.subscribe(data => this.candidates =
       this.hs.sortCandidates(data));
+}
+downloadFileSystem(file) {
+  this.downloadService.downloadFileSystem(file)
+    .subscribe(response => {
+      const filename = response.headers.get('filename');
+
+      this.saveFile(response.body, filename);
+    });
+}
+saveFile(data: any, filename?: string) {
+  const blob = new Blob([data], {type: 'text/pdf; charset=utf-8'});
+  fileSaver.saveAs(blob, filename);
 }
   outOfDate(date:string){
       if(new Date().getTime() - new Date(date).getTime()>=0){

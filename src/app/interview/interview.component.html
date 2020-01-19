@@ -68,10 +68,10 @@
     <td>{{string2Date(interview.interviewStartDateTime)| date:'MM-dd-yyyy'}}</td>
     <td>{{string2Date(interview.interviewStartDateTime)| date:'HH:mm:ss'}}</td>
     <td>{{ interview.interviewDuration }}</td>
-    <td>{{ interviewgroup[interviewgroup.length-1].intervieweeFirstName
-      +' '+interviewgroup[interviewgroup.length-1].intervieweeLastName }} </td>
-    <td>{{ interviewgroup[interviewgroup.length-1].interviewerFirstName
-      +' '+interviewgroup[interviewgroup.length-1].interviewerLastName }}  </td>
+    <td>{{ interview.intervieweeFirstName
+      +' '+interview.intervieweeLastName }} </td>
+    <td>{{ interview.interviewerFirstName
+      +' '+interview.interviewerLastName }}  </td>
     <td>{{ interview.overallRating }}</td>
     <td>{{ interview.comment }}</td>
     <td><i class="fas fa-download"></i></td>

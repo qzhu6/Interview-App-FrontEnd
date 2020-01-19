@@ -22,6 +22,11 @@ import { WebService } from './web.service';
 import { InterviewService } from './interview/interview.service';
 import { LoginComponent } from './login/login.component';
 
+import {FileUploadModule} from 'ng2-file-upload';
+import {DownloadService} from './download.service';
+
+
+
 
 
 
@@ -46,9 +51,10 @@ import { LoginComponent } from './login/login.component';
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    FileUploadModule
   ],
-  providers: [HomeService, WebService, InterviewService,AuthenticationService,AuthGaurdService],
+  providers: [HomeService, WebService, InterviewService,AuthenticationService,AuthGaurdService,DownloadService],
   bootstrap: [AppComponent],
   entryComponents: [NgbdModalContent, NewRoundOrNot, newCandidate, newEmailTemplate, SendEmail]
 })

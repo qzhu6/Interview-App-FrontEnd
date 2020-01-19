@@ -6,6 +6,8 @@ import { AllCandidate} from './candidate/allcandidate';
 import { HttpHeaders } from '@angular/common/http';
 import { MyCandidate } from './my-candidate/myCandidate';
 import { EmailTemplate } from './candidate/emailTemplate';
+import {UserInformation} from './login/userInformation';
+import {UserLogin} from './login/userLogin';
 
 
 
@@ -32,7 +34,15 @@ export class WebService {
         'Content-Type':  'application/json; charset=UTF-8'})};
     return this.http.post<Interview[][]>('api/Interview', JSON.stringify(myObj), httpOptions);
   }
-
+  authenticate(username, password) {
+    const ui: UserInformation = new UserInformation();
+    ui.username=username;
+    ui.password=password;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json; charset=UTF-8'})};
+    return this.http.post<UserLogin>('api/login', JSON.stringify(ui), httpOptions);
+  }
   getCandidate() {
     return this.http.get<AllCandidate[]>('api/AllCandidate')
     ;
@@ -75,7 +85,6 @@ export class WebService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json; charset=UTF-8'})};
-   console.log(newCandidate);
     return this.http.post('api/NewCandidate', JSON.stringify(newCandidate), httpOptions);
   }
 

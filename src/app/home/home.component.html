@@ -30,13 +30,14 @@
     <td>{{ candidate.interviewerFirstName+' '+candidate.interviewerLastName}} </td>
     <td>{{ candidate.cellPhone }} </td>
     <td>{{ candidate.positionName }} </td>
-    <td><i class="fas fa-download"></i></td>
+    <td><button (click)="downloadFileSystem(candidate.resumeFileLocation)"><i class="fas fa-download"></i></button></td>
+
+
   </tr>
     </tbody>
 </table>
 </form>
-<div [hidden]="candidates.length>0" class="alert alert-danger">
-  NO RESULT</div>
+
 <button (click)="next()" [hidden]="page+20>=candidates.length" class="btn btn-primary">next</button>
 <button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
 
