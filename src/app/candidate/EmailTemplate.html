@@ -30,6 +30,5 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-dark" (click)="close()">Close</button>
-  <button type="button" class="btn btn-outline-dark" (click)="submit()">Submit</button>
-
+  <button type="button" [disabled]="!newTemplateForm.valid" class="btn btn-outline-dark" (click)="submit()">Submit</button>
 </div>

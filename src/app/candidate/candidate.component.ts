@@ -4,20 +4,22 @@ import { EmailTemplate } from './emailTemplate';
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import { WebService } from './../web.service';
-import { FormBuilder} from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ValidatorFn, AbstractControl } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { phoneNumberValidator } from '../validators/phone-validators';
 
 @Component({
   selector: 'app-modal-newroundornot',
   templateUrl: './EmailTemplate.html',
 })
 export class newEmailTemplate{
-
   newTemplateForm = this.fb.group({
-    emailTemplateName:[''],
-    emailSubject: [''],
-    emailTemplateContent: ['']
+    emailTemplateName: ['', Validators.required],
+    emailSubject: ['', Validators.required],
+    emailTemplateContent: ['', Validators.required]
   });
   constructor(private fb: FormBuilder, public newEmailTemplateModal: NgbActiveModal, private ws: WebService,
     private modalService: NgbModal ) {}
@@ -44,26 +46,26 @@ export class newEmailTemplate{
   selector: 'app-modal-newroundornot',
   templateUrl: './candidateModal.html',
 })
-export class newCandidate{
+export class newCandidate {
   templates$: Observable<string[]>;
   templates: string[];
   positions$: Observable<string[]>;
   positions: string[];
   newCandidateForm = this.fb.group({
-    comment:[''],
-    firstName: [''],
-    lastName: [''],
-    email: [''],
+    comment: ['', Validators.required],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     emailTemplateName: [''],
-    cellPhone: [''],
+    cellPhone: ['', [Validators.required, phoneNumberValidator]],
     positionName: [''],
-    resource: [''],
+    resource: ['', Validators.required],
     resumeFileLocation: [''],
   });
   constructor(private fb: FormBuilder, public newCandidateModal: NgbActiveModal, private ws: WebService,
-    private modalService: NgbModal) {}
+              private modalService: NgbModal) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.templates$ = this.ws.getTemplatename()
     .pipe(map(data => data));
     this.templates$.subscribe(data => this.templates = data);

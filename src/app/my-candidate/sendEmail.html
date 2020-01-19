@@ -40,6 +40,6 @@
     Next</button>
   <button class="btn btn-outline-dark" (click)="previous()" [disabled]="currentCandiate===0">
       previous</button>
-  <button class="btn btn-outline-dark" (click)="submit()" [disabled]="currentCandiate!==chosenArray.length-1">
+  <button class="btn btn-outline-dark" [disabled]="!templateName.valid" (click)="submit()" [disabled]="currentCandiate!==chosenArray.length-1">
       Submit</button>
 </div>

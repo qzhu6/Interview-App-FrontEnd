@@ -2,11 +2,13 @@ import { InterviewService } from './interview.service';
 import { Component, OnInit, Input} from '@angular/core';
 import { Interview} from './interview';
 import { WebService } from './../web.service';
-import { FormBuilder} from '@angular/forms';
 import {Observable} from 'rxjs';
 import { map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ValidatorFn, AbstractControl } from '@angular/forms';
+import { phoneNumberValidator } from '../validators/phone-validators';
 
 
 
@@ -18,12 +20,12 @@ import { FormControl } from '@angular/forms';
 export class NewRoundOrNot{
   @Input() currentlist;
   constructor(public newRoundOrNotModal: NgbActiveModal, private is: InterviewService) {}
-  close(){
-    this.newRoundOrNotModal.close('Close click')
+  close() {
+    this.newRoundOrNotModal.close('Close click');
   }
   submit(){
     this.is.addinterview(this.currentlist);
-    this.newRoundOrNotModal.close('Close click')
+    this.newRoundOrNotModal.close('Close click');
   }
 }
 
@@ -33,13 +35,13 @@ export class NewRoundOrNot{
 })
 export class NgbdModalContent {
   changeForm = this.fb.group({
-    candidateName: [''],
-    interviewerName: [''],
-    positionName: [''],
-    interviewStartDate : [''],
-    hour: [''],
-    minute: [''],
-    interviewDuration: []
+    candidateName: ['', Validators.required],
+    interviewerName: ['', Validators.required],
+    positionName: ['', Validators.required],
+    interviewStartDate : ['', Validators.required],
+    hour: ['', Validators.max(24), Validators.min(0)],
+    minute: ['', Validators.max(60), Validators.min(0)],
+    interviewDuration: ['', Validators.min(0), Validators.max(5)]
   });
   positions$: Observable<string[]>;
   positions: string[];
