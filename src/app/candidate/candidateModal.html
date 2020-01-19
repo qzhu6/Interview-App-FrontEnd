@@ -67,13 +67,13 @@
     <div class="form-group">
       <label>
         Resume File Location:
-        <input type="text" formControlName="resumeFileLocation">
+        <input type="file" id="customFile">
+
       </label>
     </div>
     </form>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-dark" (click)="close()">Close</button>
-  <button type="button" class="btn btn-outline-dark" (click)="submit()">Submit</button>
-
+  <button type="button" [disabled]="!newCandidateForm.valid" class="btn btn-outline-dark" (click)="submit()">Submit</button>
 </div>

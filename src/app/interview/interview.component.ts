@@ -96,9 +96,9 @@ export class InterviewComponent implements OnInit {
   interviews: Interview[][];
   myMap: Map<number, boolean>;
 
-  date = new FormControl('', [Validators.required]);
-  hour = new FormControl('', [Validators.required]);
-  minute = new FormControl('', [Validators.required]);
+  date = new FormControl('');
+  hour = new FormControl('');
+  minute = new FormControl('');
 
 
 

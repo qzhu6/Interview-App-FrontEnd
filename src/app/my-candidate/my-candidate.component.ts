@@ -5,7 +5,7 @@ import { WebService } from './../web.service';
 import { map } from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 
 
 @Component({
@@ -17,7 +17,7 @@ export class SendEmail{
   templates$: Observable<EmailTemplate[]>;
   templates: EmailTemplate[];
   currentCandiate: number ;
-  templateName = new FormControl('');
+  templateName = new FormControl('', [Validators.required]);
   constructor(public SendEmailModal: NgbActiveModal, private ws: WebService) {
     this.currentCandiate=0;
   }
