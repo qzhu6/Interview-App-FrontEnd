@@ -6,10 +6,10 @@ import {Observable} from 'rxjs';
 import { map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, ValidatorFn, AbstractControl } from '@angular/forms';
-import { phoneNumberValidator } from '../validators/phone-validators';
-
+import { FormBuilder } from '@angular/forms';
+import {ActivatedRoute, Router } from '@angular/router';
+import * as fileSaver from 'file-saver';
+import {DownloadService} from './../download.service';
 
 
 
@@ -39,9 +39,9 @@ export class NgbdModalContent {
     interviewerName: ['', Validators.required],
     positionName: ['', Validators.required],
     interviewStartDate : ['', Validators.required],
-    hour: ['', Validators.max(24), Validators.min(0)],
-    minute: ['', Validators.max(60), Validators.min(0)],
-    interviewDuration: ['', Validators.min(0), Validators.max(5)]
+    hour: ['', [Validators.max(24), Validators.min(0), Validators.required]],
+    minute: ['', [Validators.max(60), Validators.min(0), Validators.required]],
+    interviewDuration: ['', [Validators.min(0), Validators.max(5), Validators.required]]
   });
   positions$: Observable<string[]>;
   positions: string[];
@@ -51,12 +51,38 @@ export class NgbdModalContent {
     distinctUntilChanged(),
     map(term => term.length < 3 ? []
       : this.positions.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+  );
+
+  employeeName$: Observable<string[]>;
+  employeeName: string[];
+  employee = (employee$: Observable<string>) =>
+  employee$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    map(term => term.length < 3 ? []
+      : this.employeeName.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
   )
-  constructor(private fb: FormBuilder, public activeModal: NgbActiveModal, private ws: WebService) {}
+
+  candidateName$: Observable<string[]>;
+  candidateName: string[];
+  candidate = (candidate$: Observable<string>) =>
+  candidate$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    map(term => term.length < 3 ? []
+      : this.candidateName.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+  )
+  constructor(private fb: FormBuilder, public activeModal: NgbActiveModal, private ws: WebService, private router: Router) {}
   ngOnInit() {
     this.positions$ = this.ws.getPosition()
     .pipe(map(data => data));
     this.positions$.subscribe(data => this.positions = data);
+    this.employeeName$ = this.ws.getEmployeeName()
+    .pipe(map(data => data));
+    this.employeeName$.subscribe(data => this.employeeName = data);
+    this.candidateName$ = this.ws.getCandidateName()
+    .pipe(map(data => data));
+    this.candidateName$.subscribe(data => this.candidateName = data);
   }
   close(){
     this.activeModal.close('Close click')
@@ -82,6 +108,7 @@ export class NgbdModalContent {
     newInterview.sequence = 1;
     newInterview.id = -1;
     this.ws.postNewInteview(newInterview).subscribe((result) => {console.log('a'); } );
+    window.location.href = this.router.url;
     this.activeModal.close('Close click');
   }
 }
@@ -95,20 +122,26 @@ export class InterviewComponent implements OnInit {
   interviews$: Observable<Interview[][]>;
   interviews: Interview[][];
   myMap: Map<number, boolean>;
+  positionName: string;
 
   date = new FormControl('');
   hour = new FormControl('');
   minute = new FormControl('');
 
-
-
-
   constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal,
-              private is: InterviewService ) { }
+              private is: InterviewService, private route: ActivatedRoute,private router: Router,
+              private downloadService: DownloadService
+              ) {
+                this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+
+              }
 
   ngOnInit() {
     this.myMap = new Map();
-    this.interviews$ = this.ws.getMyInterviews()
+    this.route.queryParams.subscribe(params => {
+      this.positionName = params['positionName'];
+  });
+    this.interviews$ = this.ws.getMyInterviews(this.positionName)
     .pipe(map(data => data));
     this.interviews$.subscribe(data => this.interviews =
      data);
@@ -125,12 +158,37 @@ export class InterviewComponent implements OnInit {
       d.setMinutes(+this.minute.value);
       found.interviewStartDateTime = d.toJSON();
       this.ws.postNewInteview(found).subscribe((result) => {console.log('a'); } );
-      window.location.reload();
+      window.location.href = this.router.url;
       break;
       }
     }
   }
 
+  allDone(interview: Interview){
+    if(interview.interviewDuration === null||this.hour.value===''||this.minute.value==='') {
+      return true;
+    }
+    if(+this.hour.value > 24 || +this.hour.value < 0){
+      return true;
+    }
+    if(+this.minute.value > 60 || +this.minute.value < 0 ){
+      return true;
+    }
+    return false;
+
+  }
+  downloadFileSystem(file) {
+    this.downloadService.downloadFileSystem(file)
+      .subscribe(response => {
+        const filename = response.headers.get('filename');
+
+        this.saveFile(response.body, filename);
+      });
+  }
+  saveFile(data: any, filename?: string) {
+    const blob = new Blob([data], {type: 'text/pdf; charset=utf-8'});
+    fileSaver.saveAs(blob, filename);
+  }
 
  change() {
   const modalRef = this.modalService.open(NgbdModalContent);
@@ -140,6 +198,7 @@ changeStatus(event: any, current: number){
     const found = interview.find(({ id }) => id === current);
     if ( found) {
       found.interviewStatus = event.target.value;
+      this.ws.updateInterview(found).subscribe((result) => {console.log('a'); } );
       if (event.target.value === 'Pass'){
         this.is.setInterviewlist(this.interviews);
         this.is.getInterviewlist().subscribe(

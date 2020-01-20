@@ -51,7 +51,9 @@ export class SendEmail{
 
   }
   submit(){
+
     this.ws.UpdateMyCandidate(this.chosenArray).subscribe((result) => {console.log('a'); } );
+    window.location.reload();
     this.SendEmailModal.close('Close click')
 
   }

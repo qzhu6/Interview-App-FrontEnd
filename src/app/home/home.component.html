@@ -3,7 +3,7 @@
   <br>
   <h3>My interviews</h3>
 
-<table class="table">
+<table class="table table-hover">
   <thead>
     <tr>
       <th scope="col">Interview Date</th>
@@ -18,10 +18,8 @@
     </tr>
     </thead>
     <tbody>
-  <tr *ngFor="let candidate of temp()"
-  [ngClass]="{
-    'table-dark':outOfDate(candidate.interviewStartDateTime)}">
-
+  <tr *ngFor="let candidate of temp()"  (click)="onUpdate(candidate.positionName)"
+  [ngClass]="{'table-dark':outOfDate(candidate.interviewStartDateTime)}">
     <td>{{ string2Date(candidate.interviewStartDateTime)| date:'MM-dd-yyyy'}}</td>
     <td>{{ string2Date(candidate.interviewStartDateTime)| date:'HH:mm:ss'}}</td>
     <td>{{ candidate.interviewDuration }} </td>
@@ -30,13 +28,11 @@
     <td>{{ candidate.interviewerFirstName+' '+candidate.interviewerLastName}} </td>
     <td>{{ candidate.cellPhone }} </td>
     <td>{{ candidate.positionName }} </td>
-    <td><i class="fas fa-download"></i></td>
+    <td><button (click)="$event.stopPropagation();downloadFileSystem(candidate.resumeFileLocation)"><i class="fas fa-download"></i></button></td>
   </tr>
     </tbody>
 </table>
 </form>
-<div [hidden]="candidates.length>0" class="alert alert-danger">
-  NO RESULT</div>
 <button (click)="next()" [hidden]="page+20>=candidates.length" class="btn btn-primary">next</button>
 <button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
 

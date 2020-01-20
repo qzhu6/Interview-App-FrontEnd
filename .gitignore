@@ -45,19 +45,3 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.angulardoc.json
-        .editorconfig
-        .gitignore
-        README.md
-        angular.json
-        browserslist
-        e2e/
-        karma.conf.js
-        package-lock.json
-        package.json
-        proxy.config.json
-        src/
-        tsconfig.app.json
-        tsconfig.json
-        tsconfig.spec.json
-        tslint.json

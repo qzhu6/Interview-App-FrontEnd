@@ -10,6 +10,9 @@
       <label>
         Email Template Name:
         <input type="text" formControlName="emailTemplateName">
+        <div class="alert alert-danger" *ngIf="newTemplateForm.get('emailTemplateName').hasError('required')&& newTemplateForm.get('emailTemplateName')?.touched">
+          This field is required.
+        </div>
       </label>
     </div>
     <div class="form-group">
@@ -17,12 +20,19 @@
         Email Subject:
         <input type="text" formControlName="emailSubject">
       </label>
+      <div class="alert alert-danger" *ngIf="newTemplateForm.get('emailSubject').hasError('required')&& newTemplateForm.get('emailSubject')?.touched">
+        This field is required.
+      </div>
     </div>
     <div class="form-group">
       <label>
         Email Template Content:<br>
-        <textarea rows="4" cols="50" formControlName="emailTemplateContent"></textarea>
       </label>
+        <textarea rows="4" cols="50" formControlName="emailTemplateContent"></textarea>
+        <div class="alert alert-danger" *ngIf="newTemplateForm.get('emailTemplateContent').hasError('required')&& newTemplateForm.get('emailTemplateContent')?.touched">
+          This field is required.
+        </div>
+
     </div>
 
 

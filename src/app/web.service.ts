@@ -6,6 +6,8 @@ import { AllCandidate} from './candidate/allcandidate';
 import { HttpHeaders } from '@angular/common/http';
 import { MyCandidate } from './my-candidate/myCandidate';
 import { EmailTemplate } from './candidate/emailTemplate';
+import {UserInformation} from './login/userInformation';
+import {UserLogin} from './login/userLogin';
 
 
 
@@ -23,11 +25,24 @@ export class WebService {
     return this.http.get<Candidate[]>('api/home')
     ;
   }
-  getMyInterviews() {
-    return this.http.get<Interview[][]>('api/Interview')
-    ;
+  getMyInterviews(PositionName: string ) {
+    const myObj = {
+      positionName : PositionName
+    };
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json; charset=UTF-8'})};
+    return this.http.post<Interview[][]>('api/Interview', JSON.stringify(myObj), httpOptions);
   }
-
+  authenticate(username, password) {
+    const ui: UserInformation = new UserInformation();
+    ui.username=username;
+    ui.password=password;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json; charset=UTF-8'})};
+    return this.http.post<UserLogin>('api/login', JSON.stringify(ui), httpOptions);
+  }
   getCandidate() {
     return this.http.get<AllCandidate[]>('api/AllCandidate')
     ;
@@ -43,6 +58,21 @@ export class WebService {
   }
   getTemplate() {
     return this.http.get<EmailTemplate[]>('api/ListEmailTemplate');
+  }
+
+  getEmployeeName() {
+    return this.http.get<string[]>('api/EmployeeName');
+  }
+
+  getCandidateName() {
+    return this.http.get<string[]>('api/CandidateName');
+  }
+
+  updateInterview(interview: Interview){
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json; charset=UTF-8'})};
+    return this.http.post('api/UpdateInterview', JSON.stringify(interview), httpOptions);
   }
 
 
@@ -62,7 +92,6 @@ export class WebService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json; charset=UTF-8'})};
-   console.log(newCandidate);
     return this.http.post('api/NewCandidate', JSON.stringify(newCandidate), httpOptions);
   }
 
@@ -84,10 +113,11 @@ export class WebService {
     const myObj = {
       candidateList: MyCandidate
     };
+    console.log(MyCandidate);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json; charset=UTF-8'})};
-    return this.http.post('api/UpdateMyCandidate', JSON.stringify(myObj), httpOptions);
+    return this.http.post('api/UpdateCandidate', JSON.stringify(myObj), httpOptions);
   }
 
 

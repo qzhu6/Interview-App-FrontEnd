@@ -1,21 +1,26 @@
 import { AllCandidate } from './allcandidate';
 import { EmailTemplate } from './emailTemplate';
-
-import { Component, OnInit } from '@angular/core';
+import {FileUploader} from 'ng2-file-upload';
+import { Component, OnInit,Input,ElementRef, ViewChild } from '@angular/core';
 import {Observable} from 'rxjs';
 import { WebService } from './../web.service';
 import { map } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule } from '@angular/forms';
+import * as fileSaver from 'file-saver';
+import {DownloadService} from './../download.service';
 import { FormBuilder, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { phoneNumberValidator } from '../validators/phone-validators';
+
 
 @Component({
   selector: 'app-modal-newroundornot',
   templateUrl: './EmailTemplate.html',
 })
 export class newEmailTemplate{
+@Input() tempTemplate;
+templates$: Observable<string[]>;
+
   newTemplateForm = this.fb.group({
     emailTemplateName: ['', Validators.required],
     emailSubject: ['', Validators.required],
@@ -34,11 +39,13 @@ export class newEmailTemplate{
 
   submit(){
     const tempTemplate = new EmailTemplate();
-    tempTemplate.emailSubject = this.newTemplateForm.get('emailTemplateName').value;
-    tempTemplate.emailTemplateName = this.newTemplateForm.get('emailSubject').value;
+    tempTemplate.emailSubject = this.newTemplateForm.get('emailSubject').value;
+    tempTemplate.emailTemplateName = this.newTemplateForm.get('emailTemplateName').value;
     tempTemplate.emailTemplateContent = this.newTemplateForm.get('emailTemplateContent').value;
     this.ws.PostNewTemplate(tempTemplate).subscribe((result) => {console.log('a'); } );
+    this.tempTemplate.push(tempTemplate.emailTemplateName);
     this.newEmailTemplateModal.close('Close click');
+
   }
 }
 
@@ -46,32 +53,50 @@ export class newEmailTemplate{
   selector: 'app-modal-newroundornot',
   templateUrl: './candidateModal.html',
 })
-export class newCandidate {
+
+export class newCandidate{
+  @ViewChild('fileInput', {static: false}) fileInput: ElementRef;
+
   templates$: Observable<string[]>;
   templates: string[];
   positions$: Observable<string[]>;
   positions: string[];
   newCandidateForm = this.fb.group({
-    comment: ['', Validators.required],
+    comment: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    emailTemplateName: [''],
-    cellPhone: ['', [Validators.required, phoneNumberValidator]],
-    positionName: [''],
+    emailTemplateName: ['', Validators.required],
+    cellPhone: ['', [Validators.required, phoneNumberValidator, Validators.maxLength(10)]],
+    positionName: ['', Validators.required],
     resource: ['', Validators.required],
     resumeFileLocation: [''],
   });
-  constructor(private fb: FormBuilder, public newCandidateModal: NgbActiveModal, private ws: WebService,
-              private modalService: NgbModal) {}
 
-  ngOnInit() {
+  uploader: FileUploader;
+  isDropOver: boolean;
+
+  constructor(private fb: FormBuilder, public newCandidateModal: NgbActiveModal, private ws: WebService,
+    private modalService: NgbModal) {}
+
+  ngOnInit () {
     this.templates$ = this.ws.getTemplatename()
     .pipe(map(data => data));
     this.templates$.subscribe(data => this.templates = data);
     this.positions$ = this.ws.getPosition()
     .pipe(map(data => data));
     this.positions$.subscribe(data => this.positions = data);
+    const headers = [{name: 'Accept', value: 'application/json'}];
+    this.uploader = new FileUploader({url: 'api/files', autoUpload: true, headers: headers});
+    this.uploader.onCompleteAll = () => alert('File uploaded');
+
+  }
+  fileOverAnother(e: any): void {
+    this.isDropOver = e;
+  }
+
+  fileClicked() {
+    this.fileInput.nativeElement.click();
   }
 
   close(){
@@ -80,6 +105,7 @@ export class newCandidate {
   createNewTemplate(){
     if(this.newCandidateForm.get('emailTemplateName').value === 'new'){
       const modalRef = this.modalService.open(newEmailTemplate);
+      modalRef.componentInstance.tempTemplate=this.templates;
     }
   }
 
@@ -97,6 +123,7 @@ export class newCandidate {
     newCandidate.resumeFileLocation = this.newCandidateForm.get('resumeFileLocation').value;
     this.ws.postNewCandidate(newCandidate).subscribe((result) => {console.log('a'); } );
     this.newCandidateModal.close('Close click');
+    window.location.reload();
   }
 }
 
@@ -112,21 +139,33 @@ export class CandidateComponent implements OnInit {
   page: number;
   pages: number[];
   candidateSet: Set<number>;
-  constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal) {
+  constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal,
+    private downloadService: DownloadService) {
     this.candidateSet = new Set();
     this.candidates = [];
     this.page = 0 ;
+  }
+  downloadFileSystem(file) {
+    this.downloadService.downloadFileSystem(file)
+      .subscribe(response => {
+        const filename = response.headers.get('filename');
+
+        this.saveFile(response.body, filename);
+      });
+  }
+  saveFile(data: any, filename?: string) {
+    const blob = new Blob([data], {type: 'text/pdf; charset=utf-8'});
+    fileSaver.saveAs(blob, filename);
   }
   ngOnInit() {
     this.page=0;
     this.candidate$ = this.ws.getCandidate()
     .pipe(map(data => data));
-    this.candidate$.subscribe(data => this.candidates = data);
+    this.candidate$.subscribe(data => this.candidates = data
+      .sort((a, b) => a.createDate < b.createDate ? -1 : a.createDate > b.createDate ? 1 : 0)
+      );
   }
   checkCandiate(candidateID){
-    console.log(candidateID)
-
-    console.log(this.candidateSet)
     if (this.candidateSet.has(candidateID)){
       this.candidateSet.delete(candidateID);
     } else
@@ -139,7 +178,10 @@ export class CandidateComponent implements OnInit {
     candidateArray.push(candidateID);
     this.ws.postMyCandidate(candidateArray).subscribe((result) => {console.log('a')});
     }
-
+    orderByEmployee(){
+    this.page=0;
+    this.candidates.sort((a, b) => a.employeeFirstName < b.employeeFirstName ? -1 : a.employeeFirstName > b.employeeFirstName ? 1 : 0);
+    }
 
   orderByDate(){
     this.page=0;

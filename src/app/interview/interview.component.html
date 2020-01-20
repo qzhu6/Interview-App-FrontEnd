@@ -1,6 +1,6 @@
   <h3>>My interviews</h3>
   <br>
-  <h3>My interviews</h3>
+  <h3>{{positionName}}</h3>
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Action
@@ -68,13 +68,13 @@
     <td>{{string2Date(interview.interviewStartDateTime)| date:'MM-dd-yyyy'}}</td>
     <td>{{string2Date(interview.interviewStartDateTime)| date:'HH:mm:ss'}}</td>
     <td>{{ interview.interviewDuration }}</td>
-    <td>{{ interviewgroup[interviewgroup.length-1].intervieweeFirstName
-      +' '+interviewgroup[interviewgroup.length-1].intervieweeLastName }} </td>
-    <td>{{ interviewgroup[interviewgroup.length-1].interviewerFirstName
-      +' '+interviewgroup[interviewgroup.length-1].interviewerLastName }}  </td>
+    <td>{{ interview.intervieweeFirstName
+      +' '+interview.intervieweeLastName }} </td>
+    <td>{{ interview.interviewerFirstName
+      +' '+interview.interviewerLastName }}  </td>
     <td>{{ interview.overallRating }}</td>
     <td>{{ interview.comment }}</td>
-    <td><i class="fas fa-download"></i></td>
+    <td><button (click)="downloadFileSystem(interview.resumeFileLocation)"><i class="fas fa-download"></i></button></td>
     <div *ngIf="j===interviewgroup.length-1">
       <td>
       <select (change)="changeStatus($event,interview.id)">
@@ -93,23 +93,19 @@
   <ng-template #formRow>
     <td>?</td>
     <td>{{ interview.sequence }} </td>
-    <td> <input size='1' type="text" ngbDatepicker #d="ngbDatepicker" [formControl]="date">
+    <td class="col-2"> <input size='1' type="text" ngbDatepicker #d="ngbDatepicker" [formControl]="date">
       <button (click)="d.toggle()" type="button"><i class="far fa-calendar-alt"></i></button></td>
-    <td>      <label>
-      Hour:
-      <input size='2' type="text" [formControl]="hour">
-    </label>
-    <label>
-      Minute:<input size='2' type="text" [formControl]="minute"></label></td>
-    <td><input size='2' type="text" (input)="interview.interviewDuration = $event.target.value" [value]= "interview.interviewDuration" > </td>
+    <td class="col-3"><input size='1' placeholder="Hour" type="text" [formControl]="hour">
+    :<input size='1' placeholder="Min" type="text" [formControl]="minute"></td>
+    <td><input size='1' type="text" (input)="interview.interviewDuration = $event.target.value" [value]= "interview.interviewDuration" > </td>
     <td><input type="text" size='6' (input)="interview.intervieweeFirstName = $event.target.value" [value]= "interview.intervieweeFirstName" >
     <input type="text" size='6' (input)="interview.intervieweeLastName = $event.target.value" [value]= "interview.intervieweeLastName" > </td>
     <td><input type="text" size='6' (input)="interview.interviewerFirstName = $event.target.value" [value]= "interview.interviewerFirstName" >
       <input type="text" size='6' (input)="interview.interviewerLastName = $event.target.value" [value]= "interview.interviewerLastName" > </td>
-    <td><input type="text" size='2' (input)="interview.overallRating = $event.target.value" [value]= "interview.overallRating" > </td>
+    <td></td>
     <td><input type="text" size='5' (input)="interview.comment = $event.target.value" [value]= "interview.comment" > </td>
-    <td><i class="fas fa-download"></i></td>
-    <td>Pending<button (click)="storeInterview(-1)">save</button></td>
+    <td><button (click)="downloadFileSystem(interview.resumeFileLocation)"><i class="fas fa-download"></i></button></td>
+    <td>Pending<button [disabled]="allDone(interview)" (click)="storeInterview(-1)">save</button></td>
   </ng-template>
   </tr>
 </ng-container>

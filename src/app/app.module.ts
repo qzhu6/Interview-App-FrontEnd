@@ -1,3 +1,4 @@
+import { AuthenticationService } from './authentication.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -15,10 +16,18 @@ import { CandidateComponent, newCandidate , newEmailTemplate} from './candidate/
 import { MyCandidateComponent, SendEmail} from './my-candidate/my-candidate.component';
 
 
-
+import { AuthGaurdService } from './auth-gaurd.service';
 import { HomeService } from './home/home.service';
 import { WebService } from './web.service';
 import { InterviewService } from './interview/interview.service';
+import { LoginComponent } from './login/login.component';
+
+import {FileUploadModule} from 'ng2-file-upload';
+import {DownloadService} from './download.service';
+import { PageNotFoundComponentComponent } from './page-not-found-component/page-not-found-component.component';
+import { FooterComponent } from './footer/footer.component';
+
+
 
 
 
@@ -36,16 +45,20 @@ import { InterviewService } from './interview/interview.service';
     newCandidate,
     MyCandidateComponent,
     newEmailTemplate,
-    SendEmail
+    SendEmail,
+    LoginComponent,
+    PageNotFoundComponentComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    FileUploadModule
   ],
-  providers: [HomeService, WebService, InterviewService],
+  providers: [HomeService, WebService, InterviewService,AuthenticationService,AuthGaurdService,DownloadService],
   bootstrap: [AppComponent],
   entryComponents: [NgbdModalContent, NewRoundOrNot, newCandidate, newEmailTemplate, SendEmail]
 })
