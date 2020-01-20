@@ -37,7 +37,6 @@ export class InterviewService {
     interview.positionName = currentlist.positionName;
     interview.resumeFileLocation = currentlist.resumeFileLocation;
     interview.id = -1;
-    interview.overallRating = 0;
     interview.interviewDuration = 0;
 
 

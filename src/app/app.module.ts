@@ -24,6 +24,8 @@ import { LoginComponent } from './login/login.component';
 
 import {FileUploadModule} from 'ng2-file-upload';
 import {DownloadService} from './download.service';
+import { PageNotFoundComponentComponent } from './page-not-found-component/page-not-found-component.component';
+import { FooterComponent } from './footer/footer.component';
 
 
 
@@ -44,7 +46,9 @@ import {DownloadService} from './download.service';
     MyCandidateComponent,
     newEmailTemplate,
     SendEmail,
-    LoginComponent
+    LoginComponent,
+    PageNotFoundComponentComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

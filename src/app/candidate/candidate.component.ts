@@ -4,11 +4,14 @@ import {FileUploader} from 'ng2-file-upload';
 import { Component, OnInit,Input,ElementRef, ViewChild } from '@angular/core';
 import {Observable} from 'rxjs';
 import { WebService } from './../web.service';
-import { FormBuilder} from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as fileSaver from 'file-saver';
 import {DownloadService} from './../download.service';
+import { FormBuilder, ValidatorFn, AbstractControl } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { phoneNumberValidator } from '../validators/phone-validators';
+
 
 @Component({
   selector: 'app-modal-newroundornot',
@@ -19,9 +22,9 @@ export class newEmailTemplate{
 templates$: Observable<string[]>;
 
   newTemplateForm = this.fb.group({
-    emailTemplateName:[''],
-    emailSubject: [''],
-    emailTemplateContent: ['']
+    emailTemplateName: ['', Validators.required],
+    emailSubject: ['', Validators.required],
+    emailTemplateContent: ['', Validators.required]
   });
   constructor(private fb: FormBuilder, public newEmailTemplateModal: NgbActiveModal, private ws: WebService,
     private modalService: NgbModal ) {}
@@ -59,14 +62,14 @@ export class newCandidate{
   positions$: Observable<string[]>;
   positions: string[];
   newCandidateForm = this.fb.group({
-    comment:[''],
-    firstName: [''],
-    lastName: [''],
-    email: [''],
-    emailTemplateName: [''],
-    cellPhone: [''],
-    positionName: [''],
-    resource: [''],
+    comment: [''],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    emailTemplateName: ['', Validators.required],
+    cellPhone: ['', [Validators.required, phoneNumberValidator, Validators.maxLength(10)]],
+    positionName: ['', Validators.required],
+    resource: ['', Validators.required],
     resumeFileLocation: [''],
   });
 
@@ -158,7 +161,9 @@ export class CandidateComponent implements OnInit {
     this.page=0;
     this.candidate$ = this.ws.getCandidate()
     .pipe(map(data => data));
-    this.candidate$.subscribe(data => this.candidates = data);
+    this.candidate$.subscribe(data => this.candidates = data
+      .sort((a, b) => a.createDate < b.createDate ? -1 : a.createDate > b.createDate ? 1 : 0)
+      );
   }
   checkCandiate(candidateID){
     if (this.candidateSet.has(candidateID)){
@@ -173,7 +178,10 @@ export class CandidateComponent implements OnInit {
     candidateArray.push(candidateID);
     this.ws.postMyCandidate(candidateArray).subscribe((result) => {console.log('a')});
     }
-
+    orderByEmployee(){
+    this.page=0;
+    this.candidates.sort((a, b) => a.employeeFirstName < b.employeeFirstName ? -1 : a.employeeFirstName > b.employeeFirstName ? 1 : 0);
+    }
 
   orderByDate(){
     this.page=0;

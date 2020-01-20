@@ -2,12 +2,16 @@ import { InterviewService } from './interview.service';
 import { Component, OnInit, Input} from '@angular/core';
 import { Interview} from './interview';
 import { WebService } from './../web.service';
-import { FormBuilder} from '@angular/forms';
 import {Observable} from 'rxjs';
 import { map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import {ActivatedRoute, Router } from '@angular/router';
+import * as fileSaver from 'file-saver';
+import {DownloadService} from './../download.service';
+
+
 
 @Component({
   selector: 'app-modal-newroundornot',
@@ -16,12 +20,12 @@ import {ActivatedRoute, Router } from '@angular/router';
 export class NewRoundOrNot{
   @Input() currentlist;
   constructor(public newRoundOrNotModal: NgbActiveModal, private is: InterviewService) {}
-  close(){
-    this.newRoundOrNotModal.close('Close click')
+  close() {
+    this.newRoundOrNotModal.close('Close click');
   }
   submit(){
     this.is.addinterview(this.currentlist);
-    this.newRoundOrNotModal.close('Close click')
+    this.newRoundOrNotModal.close('Close click');
   }
 }
 
@@ -31,13 +35,13 @@ export class NewRoundOrNot{
 })
 export class NgbdModalContent {
   changeForm = this.fb.group({
-    candidateName: [''],
-    interviewerName: [''],
-    positionName: [''],
-    interviewStartDate : [''],
-    hour: [''],
-    minute: [''],
-    interviewDuration: []
+    candidateName: ['', Validators.required],
+    interviewerName: ['', Validators.required],
+    positionName: ['', Validators.required],
+    interviewStartDate : ['', Validators.required],
+    hour: ['', [Validators.max(24), Validators.min(0), Validators.required]],
+    minute: ['', [Validators.max(60), Validators.min(0), Validators.required]],
+    interviewDuration: ['', [Validators.min(0), Validators.max(5), Validators.required]]
   });
   positions$: Observable<string[]>;
   positions: string[];
@@ -125,7 +129,9 @@ export class InterviewComponent implements OnInit {
   minute = new FormControl('');
 
   constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal,
-              private is: InterviewService, private route: ActivatedRoute,private router: Router) {
+              private is: InterviewService, private route: ActivatedRoute,private router: Router,
+              private downloadService: DownloadService
+              ) {
                 this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
               }
@@ -135,13 +141,11 @@ export class InterviewComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.positionName = params['positionName'];
   });
-  console.log( this.positionName );
     this.interviews$ = this.ws.getMyInterviews(this.positionName)
     .pipe(map(data => data));
     this.interviews$.subscribe(data => this.interviews =
      data);
  }
-
  storeInterview(current){
   for (const interview of this.interviews) {
     const found = interview.find(({ id }) => id === current);
@@ -154,11 +158,36 @@ export class InterviewComponent implements OnInit {
       d.setMinutes(+this.minute.value);
       found.interviewStartDateTime = d.toJSON();
       this.ws.postNewInteview(found).subscribe((result) => {console.log('a'); } );
-      // this.router.navigate(['interview/'],{queryParams: {positionName: this.positionName}});
       window.location.href = this.router.url;
       break;
       }
     }
+  }
+
+  allDone(interview: Interview){
+    if(interview.interviewDuration === null||this.hour.value===''||this.minute.value==='') {
+      return true;
+    }
+    if(+this.hour.value > 24 || +this.hour.value < 0){
+      return true;
+    }
+    if(+this.minute.value > 60 || +this.minute.value < 0 ){
+      return true;
+    }
+    return false;
+
+  }
+  downloadFileSystem(file) {
+    this.downloadService.downloadFileSystem(file)
+      .subscribe(response => {
+        const filename = response.headers.get('filename');
+
+        this.saveFile(response.body, filename);
+      });
+  }
+  saveFile(data: any, filename?: string) {
+    const blob = new Blob([data], {type: 'text/pdf; charset=utf-8'});
+    fileSaver.saveAs(blob, filename);
   }
 
  change() {
@@ -169,6 +198,7 @@ changeStatus(event: any, current: number){
     const found = interview.find(({ id }) => id === current);
     if ( found) {
       found.interviewStatus = event.target.value;
+      this.ws.updateInterview(found).subscribe((result) => {console.log('a'); } );
       if (event.target.value === 'Pass'){
         this.is.setInterviewlist(this.interviews);
         this.is.getInterviewlist().subscribe(

@@ -7,69 +7,66 @@
 <div class="modal-body">
   <form [formGroup]="newCandidateForm" >
     <div class="form-group">
-      <label>
-        First Name:
-        <input type="text" formControlName="firstName">
-      </label>
+      <label for="firstName" >First Name: </label>
+        <input type="text" class="form-control" formControlName="firstName"  id="firstName">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('firstName').hasError('required')&& newCandidateForm.get('firstName')?.touched">
+          First Name is Required!
+        </div>
     </div>
     <div class="form-group">
-      <label>
-        Last Name:
-        <input type="text" formControlName="lastName">
-      </label>
+      <label for="lastName" >Last Name:</label>
+        <input type="text" class="form-control" formControlName="lastName" id="lastName">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('lastName').hasError('required')&& newCandidateForm.get('lastName')?.touched">
+          Last Name is Required!
+        </div>
     </div>
     <div class="form-group">
-      <label>
-        Email:
-        <input type="text" formControlName="email">
-      </label>
+      <label> Email:  </label>
+      <input type="text" class="form-control" formControlName="email">
+      <div class="alert alert-danger" *ngIf="newCandidateForm.get('email').hasError('required')&& newCandidateForm.get('email')?.touched">
+          Email is Required!
+      </div>
     </div>
     <div class="form-group">
-      <label>
-        Email Template:
-        <select formControlName="emailTemplateName" (change)="createNewTemplate()">
+      <label>Email Template:  </label>
+        <select class="form-control" formControlName="emailTemplateName" (change)="createNewTemplate()">
           <ng-container *ngFor="let template of templates">
           <option [value]="template" >{{template}}</option>
         </ng-container>
-        <!-- <option value="BackEnd" >BackEnd</option> -->
         <option value="new" >Create New</option>
         </select>
-      </label>
     </div>
     <div class="form-group">
-      <label>
-        Cell Phone:
-        <input type="text" formControlName="cellPhone">
-      </label>
+      <label>Cell Phone:</label>
+        <input type="text" class="form-control" formControlName="cellPhone">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('cellPhone').hasError('required')&&
+        newCandidateForm.get('cellPhone')?.touched">
+          CellPhone number is Invalid
+        </div>
+        <div class="alert alert-danger" *ngIf="
+        newCandidateForm.get('cellPhone')?.touched && newCandidateForm.get('cellPhone').hasError('maxlength')">
+          CellPhone number is Invalid
+        </div>
     </div>
     <div class="form-group">
-      <label>
-        Position Name:
-        <select formControlName="positionName">
+      <label> Position Name:</label>
+        <select class="form-control" formControlName="positionName">
           <ng-container *ngFor="let position of positions">
           <option [value]="position" >{{position}}</option>
         </ng-container>
         </select>
-      </label>
     </div>
     <div class="form-group">
-      <label>
-        Resource:
-        <input type="text" formControlName="resource">
-      </label>
+      <label> Resource:</label>
+        <input type="text" class="form-control" formControlName="resource">
+      <div class="alert alert-danger" *ngIf="newCandidateForm.get('resource').hasError('required')&& newCandidateForm.get('resource')?.touched">
+        Resource is required.
+      </div>
     </div>
     <div class="form-group">
-      <label>
-        Comments:
-        <input type="text" formControlName="comment">
-      </label>
+      <label>Comments: </label>
+        <input type="text" class="form-control" formControlName="comment">
     </div>
-    <!-- <div class="form-group">
-      <label>
-        Resume File Location:
-        <input type="text" formControlName="resumeFileLocation">
-      </label>
-    </div> -->
     </form>
     <div>
       <input #fileInput type="file" ng2FileSelect [uploader]="uploader"/>
@@ -85,6 +82,6 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-dark" (click)="close()">Close</button>
-  <button type="button" class="btn btn-outline-dark" (click)="submit()">Submit</button>
+  <button type="button" [disabled]="!newCandidateForm.valid" class="btn btn-outline-dark" (click)="submit()">Submit</button>
 
 </div>

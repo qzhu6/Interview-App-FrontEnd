@@ -1,6 +1,6 @@
 import { AuthenticationService } from './../authentication.service';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder} from '@angular/forms';
+import { FormBuilder,Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebService } from './../web.service';
 
@@ -19,8 +19,8 @@ export class LoginComponent implements OnInit {
   Status:string;
   UserName:string;
   loginForm = this.fb.group({
-    userName: [''],
-    passWord: ['']
+    userName: ['',Validators.required],
+    passWord: ['',Validators.required]
   });
   invalidLogin = false;
 

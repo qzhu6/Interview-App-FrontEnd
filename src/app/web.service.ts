@@ -68,6 +68,13 @@ export class WebService {
     return this.http.get<string[]>('api/CandidateName');
   }
 
+  updateInterview(interview: Interview){
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json; charset=UTF-8'})};
+    return this.http.post('api/UpdateInterview', JSON.stringify(interview), httpOptions);
+  }
+
 
   postMyCandidate(candidatearray) {
     const myObj = {
@@ -106,6 +113,7 @@ export class WebService {
     const myObj = {
       candidateList: MyCandidate
     };
+    console.log(MyCandidate);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json; charset=UTF-8'})};

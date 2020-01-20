@@ -27,14 +27,15 @@
 </tr>
   </tbody>
 </table>
-
 <div>
   <button (click)="sendEmail()" class="btn btn-primary">Send Email</button>
 </div>
 <button (click)="next()" [hidden]="page+20>=myCandidates.length" class="btn btn-primary">next</button>
 <button (click)="previous()" [hidden]="page==0" class="btn btn-primary"> previous</button>
+<div *ngIf="getPages().length>1">
 <button *ngFor="let i of getPages()" (click)="jump(i)" class="btn btn-link">
 {{i}}
 </button>
+</div>
 
 

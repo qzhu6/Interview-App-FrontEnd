@@ -7,6 +7,8 @@ import {Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fileSaver from 'file-saver';
 import {DownloadService} from './../download.service';
+import {ActivatedRoute, Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-home',
@@ -23,8 +25,10 @@ export class HomeComponent implements OnInit {
 
 
   constructor(private hs: HomeService,private fb: FormBuilder, private ws: WebService,
-    private downloadService: DownloadService
+    private downloadService: DownloadService,  private router: Router
     ) {
+
+
     this.candidates=[];
     this.page=0;
   }
@@ -62,6 +66,10 @@ saveFile(data: any, filename?: string) {
   }
   jump(i:number){
        this.page=(i-1)*20
+  }
+  onUpdate(positionName){
+    console.log(positionName);
+    this.router.navigate(['/interview'], { queryParams: {positionName: positionName}});
   }
 
 

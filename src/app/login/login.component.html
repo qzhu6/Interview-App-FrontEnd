@@ -2,12 +2,12 @@
 <ng-container *ngIf="!isLoggedIn()">
 <form [formGroup]="loginForm">
   <h3>LogIn</h3>
-  <h1 >Please sign in</h1>
+  <div class="d-flex justify-content-center"><h1>Log In</h1></div>
   <label for="inputEmail" class="sr-only" >User</label>
   <input type="email" id="inputEmail" class="form-control" placeholder="User Name" formControlName="userName">
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" id="inputPassword" class="form-control" placeholder="Password" formControlName="passWord">
-  <button class="btn btn-lg btn-primary btn-block" (click)="SignIn()">Sign in</button>
+  <button class="btn btn-lg btn-primary btn-block" (click)="SignIn()"[disabled]="!loginForm.valid">Sign in</button>
 </form>
 <div *ngIf="isWrong()" class="alert alert-danger" role="alert">
 {{Status}}
@@ -15,6 +15,6 @@
 </ng-container>
 <ng-container *ngIf="isLoggedIn()">
 <h3>a</h3>
-<h1>Welcome,{{UserName}}</h1>
+<div class="d-flex justify-content-center"><h1>Success!</h1></div>
 </ng-container>
 </div>
