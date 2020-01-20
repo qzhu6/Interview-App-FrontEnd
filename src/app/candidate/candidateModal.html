@@ -10,18 +10,27 @@
       <label>
         First Name:
         <input type="text" formControlName="firstName">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('firstName').hasError('required')&& newCandidateForm.get('firstName')?.touched">
+          First Name is Required!
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Last Name:
         <input type="text" formControlName="lastName">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('lastName').hasError('required')&& newCandidateForm.get('lastName')?.touched">
+          Last Name is Required!
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Email:
         <input type="text" formControlName="email">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('email').hasError('required')&& newCandidateForm.get('email')?.touched">
+          Email is Required!
+        </div>
       </label>
     </div>
     <div class="form-group">
@@ -34,12 +43,18 @@
         <!-- <option value="BackEnd" >BackEnd</option> -->
         <option value="new" >Create New</option>
         </select>
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('emailTemplateName').hasError('required')&& newCandidateForm.get('emailTemplateName')?.touched">
+          Please select email templete
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Cell Phone:
         <input type="text" formControlName="cellPhone">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('cellPhone').hasError('required')&& newCandidateForm.get('cellPhone')?.touched">
+          CellPhone number is required.
+        </div>
       </label>
     </div>
     <div class="form-group">
@@ -50,25 +65,33 @@
           <option [value]="position" >{{position}}</option>
         </ng-container>
         </select>
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('positionName').hasError('required')&& newCandidateForm.get('positionName')?.touched">
+          Please select a position.
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Resource:
         <input type="text" formControlName="resource">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('resource').hasError('required')&& newCandidateForm.get('resource')?.touched">
+          Resource is required.
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Comments:
         <input type="text" formControlName="comment">
+        <div class="alert alert-danger" *ngIf="newCandidateForm.get('comment').hasError('required')&& newCandidateForm.get('comment')?.touched">
+          Comment is required.
+        </div>
       </label>
     </div>
     <div class="form-group">
       <label>
         Resume File Location:
         <input type="file" id="customFile">
-
       </label>
     </div>
     </form>

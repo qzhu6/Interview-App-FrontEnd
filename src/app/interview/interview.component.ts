@@ -100,9 +100,6 @@ export class InterviewComponent implements OnInit {
   hour = new FormControl('');
   minute = new FormControl('');
 
-
-
-
   constructor(private fb: FormBuilder, private ws: WebService, private modalService: NgbModal,
               private is: InterviewService ) { }
 
